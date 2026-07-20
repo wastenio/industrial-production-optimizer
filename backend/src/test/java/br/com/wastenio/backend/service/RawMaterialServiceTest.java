@@ -262,7 +262,7 @@ class RawMaterialServiceTest {
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
-    }
+    } 
 
     private void setCreatedAt(
             RawMaterial rawMaterial,
