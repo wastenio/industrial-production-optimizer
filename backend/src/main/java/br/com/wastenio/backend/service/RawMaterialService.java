@@ -12,87 +12,83 @@ import br.com.wastenio.backend.exception.BusinessException;
 import br.com.wastenio.backend.exception.ResourceNotFoundException;
 import br.com.wastenio.backend.mapper.RawMaterialMapper;
 import br.com.wastenio.backend.repository.RawMaterialRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Service
 public class RawMaterialService {
 
-    private final RawMaterialRepository rawMaterialRepository;
-    private final RawMaterialMapper rawMaterialMapper;
+	private final RawMaterialRepository rawMaterialRepository;
+	private final RawMaterialMapper rawMaterialMapper;
 
-    public RawMaterialService(
-            RawMaterialRepository rawMaterialRepository,
-            RawMaterialMapper rawMaterialMapper) {
+	public RawMaterialService(RawMaterialRepository rawMaterialRepository, RawMaterialMapper rawMaterialMapper) {
 
-        this.rawMaterialRepository = rawMaterialRepository;
-        this.rawMaterialMapper = rawMaterialMapper;
-    }
+		this.rawMaterialRepository = rawMaterialRepository;
+		this.rawMaterialMapper = rawMaterialMapper;
+	}
 
-    @Transactional
-    public RawMaterialResponse create(RawMaterialRequest request) {
-        String normalizedCode = rawMaterialMapper.normalizeCode(request.code());
+	@Transactional
+	public RawMaterialResponse create(RawMaterialRequest request) {
+		String normalizedCode = rawMaterialMapper.normalizeCode(request.code());
 
-        validateDuplicatedCode(normalizedCode);
+		validateDuplicatedCode(normalizedCode);
 
-        RawMaterial rawMaterial = rawMaterialMapper.toEntity(request);
+		RawMaterial rawMaterial = rawMaterialMapper.toEntity(request);
 
-        RawMaterial savedRawMaterial = rawMaterialRepository.save(rawMaterial);
+		RawMaterial savedRawMaterial = rawMaterialRepository.save(rawMaterial);
 
-        return rawMaterialMapper.toResponse(savedRawMaterial);
-    }
+		return rawMaterialMapper.toResponse(savedRawMaterial);
+	}
 
-    @Transactional(readOnly = true)
-    public List<RawMaterialResponse> findAll() {
-        return rawMaterialRepository.findAll()
-                .stream()
-                .map(rawMaterialMapper::toResponse)
-                .toList();
-    }
+	@Transactional(readOnly = true)
+	public List<RawMaterialResponse> findAll() {
+		return rawMaterialRepository.findAll().stream().map(rawMaterialMapper::toResponse).toList();
+	}
 
-    @Transactional(readOnly = true)
-    public RawMaterialResponse findById(Long id) {
-        RawMaterial rawMaterial = findEntityById(id);
+	@Transactional(readOnly = true)
+	public RawMaterialResponse findById(Long id) {
+		RawMaterial rawMaterial = findEntityById(id);
 
-        return rawMaterialMapper.toResponse(rawMaterial);
-    }
+		return rawMaterialMapper.toResponse(rawMaterial);
+	}
 
-    @Transactional
-    public RawMaterialResponse update(Long id, RawMaterialRequest request) {
-        RawMaterial rawMaterial = findEntityById(id);
+	@Transactional
+	public RawMaterialResponse update(Long id, RawMaterialRequest request) {
+		RawMaterial rawMaterial = findEntityById(id);
 
-        String normalizedCode = rawMaterialMapper.normalizeCode(request.code());
+		String normalizedCode = rawMaterialMapper.normalizeCode(request.code());
 
-        if (rawMaterialRepository.existsByCodeAndIdNot(normalizedCode, id)) {
-            throw new BusinessException(
-                    "A raw material with code '" + normalizedCode + "' already exists"
-            );
-        }
+		if (rawMaterialRepository.existsByCodeAndIdNot(normalizedCode, id)) {
+			throw new BusinessException("Já existe uma matéria-prima com o código '" + normalizedCode + "'.");
+		}
 
-        rawMaterialMapper.updateEntityFromRequest(request, rawMaterial);
+		rawMaterialMapper.updateEntityFromRequest(request, rawMaterial);
 
-        RawMaterial updatedRawMaterial = rawMaterialRepository.save(rawMaterial);
+		RawMaterial updatedRawMaterial = rawMaterialRepository.save(rawMaterial);
 
-        return rawMaterialMapper.toResponse(updatedRawMaterial);
-    }
+		return rawMaterialMapper.toResponse(updatedRawMaterial);
+	}
 
-    @Transactional
-    public void delete(Long id) {
-        RawMaterial rawMaterial = findEntityById(id);
+	@Transactional
+	public void delete(Long id) {
+		RawMaterial rawMaterial = findEntityById(id);
 
-        rawMaterialRepository.delete(rawMaterial);
-    }
+		try {
+			rawMaterialRepository.delete(rawMaterial);
+			rawMaterialRepository.flush();
+		} catch (DataIntegrityViolationException exception) {
+			throw new BusinessException(
+					"Esta matéria-prima não pode ser excluída porque está vinculada a um ou mais produtos.");
+		}
+	}
 
-    private RawMaterial findEntityById(Long id) {
-        return rawMaterialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Raw material with id " + id + " was not found"
-                ));
-    }
+	private RawMaterial findEntityById(Long id) {
+		return rawMaterialRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Matéria-prima com ID " + id + " não encontrada."));
+	}
 
-    private void validateDuplicatedCode(String normalizedCode) {
-        if (rawMaterialRepository.existsByCode(normalizedCode)) {
-            throw new BusinessException(
-                    "A raw material with code '" + normalizedCode + "' already exists"
-            );
-        }
-    }
+	private void validateDuplicatedCode(String normalizedCode) {
+		if (rawMaterialRepository.existsByCode(normalizedCode)) {
+			throw new BusinessException("Já existe uma matéria-prima com o código '" + normalizedCode + "'.");
+		}
+	}
 }
