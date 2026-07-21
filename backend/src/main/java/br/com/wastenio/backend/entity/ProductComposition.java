@@ -16,54 +16,55 @@ import jakarta.persistence.Table;
 @Table(name = "product_composition")
 public class ProductComposition {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "raw_material_id", nullable = false)
-    private RawMaterial rawMaterial;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "raw_material_id", nullable = false)
+	private RawMaterial rawMaterial;
 
-    @Column(name = "required_quantity", nullable = false, precision = 15, scale = 3)
-    private BigDecimal requiredQuantity;
+	@Column(name = "required_quantity", nullable = false, precision = 15, scale = 3)
+	private BigDecimal requiredQuantity;
 
-    public ProductComposition(
-            RawMaterial rawMaterial,
-            BigDecimal requiredQuantity) {
+	public ProductComposition() {
+	}
 
-        this.rawMaterial = rawMaterial;
-        this.requiredQuantity = requiredQuantity;
-    }
+	public ProductComposition(RawMaterial rawMaterial, BigDecimal requiredQuantity) {
 
-    public Long getId() {
-        return id;
-    }
+		this.rawMaterial = rawMaterial;
+		this.requiredQuantity = requiredQuantity;
+	}
 
-    public Product getProduct() {
-        return product;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+	public Product getProduct() {
+		return product;
+	}
 
-    public RawMaterial getRawMaterial() {
-        return rawMaterial;
-    }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-    public void setRawMaterial(RawMaterial rawMaterial) {
-        this.rawMaterial = rawMaterial;
-    }
+	public RawMaterial getRawMaterial() {
+		return rawMaterial;
+	}
 
-    public BigDecimal getRequiredQuantity() {
-        return requiredQuantity;
-    }
+	public void setRawMaterial(RawMaterial rawMaterial) {
+		this.rawMaterial = rawMaterial;
+	}
 
-    public void setRequiredQuantity(BigDecimal requiredQuantity) {
-        this.requiredQuantity = requiredQuantity;
-    }
+	public BigDecimal getRequiredQuantity() {
+		return requiredQuantity;
+	}
+
+	public void setRequiredQuantity(BigDecimal requiredQuantity) {
+		this.requiredQuantity = requiredQuantity;
+	}
 }
