@@ -96,7 +96,7 @@ public class ProductService {
 
 	private void validateDuplicatedCode(String normalizedCode) {
 		if (productRepository.existsByCode(normalizedCode)) {
-			throw new BusinessException("A product with code '" + normalizedCode + "' already exists");
+			throw new BusinessException("Já existe um produto com o código '" + normalizedCode + "'.");
 		}
 	}
 
@@ -108,8 +108,8 @@ public class ProductService {
 			boolean added = rawMaterialIds.add(composition.rawMaterialId());
 
 			if (!added) {
-				throw new BusinessException("Raw material with id " + composition.rawMaterialId()
-						+ " is duplicated in product composition");
+				throw new BusinessException("A matéria-prima com ID " + composition.rawMaterialId()
+						+ " está duplicada na composição do produto.");
 			}
 		}
 	}
@@ -127,6 +127,6 @@ public class ProductService {
 
 	private RawMaterial findRawMaterialById(Long id) {
 		return rawMaterialRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Raw material with id " + id + " was not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado."));
 	}
 }

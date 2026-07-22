@@ -12,31 +12,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ProductRequest(
-
-        @NotBlank(message = "Code is required")
-        @Size(max = 50, message = "Code must have at most 50 characters")
+        @NotBlank(message = "O código é obrigatório.")
+        @Size(max = 50, message = "O código deve ter no máximo 50 caracteres.")
         String code,
 
-        @NotBlank(message = "Name is required")
-        @Size(max = 150, message = "Name must have at most 150 characters")
+        @NotBlank(message = "O nome é obrigatório.")
+        @Size(max = 150, message = "O nome deve ter no máximo 150 caracteres.")
         String name,
 
-        @NotNull(message = "Sale price is required")
-        @DecimalMin(
-                value = "0.01",
-                inclusive = true,
-                message = "Sale price must be greater than zero"
-        )
-        @Digits(
-                integer = 13,
-                fraction = 2,
-                message = "Sale price must have at most 13 integer digits and 2 decimal places"
-        )
+        @NotNull(message = "O valor de venda é obrigatório.")
+        @DecimalMin(value = "0.01", inclusive = true, message = "O valor de venda deve ser maior que zero.")
+        @Digits(integer = 13, fraction = 2, message = "O valor de venda deve ter no máximo 13 dígitos inteiros e 2 casas decimais.")
         BigDecimal salePrice,
 
-        @NotEmpty(message = "Product composition is required")
+        @NotEmpty(message = "A composição do produto é obrigatória.")
         @Valid
         List<ProductCompositionRequest> compositions
-
-) {
-}
+) {}
