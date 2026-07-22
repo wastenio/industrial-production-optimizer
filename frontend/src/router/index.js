@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'raw-materials-new',
       component: RawMaterialFormView,
     },
+    {
+      path: '/raw-materials/:id/edit',
+      name: 'raw-materials-edit',
+      component: RawMaterialFormView,
+    },
   ],
 })
 

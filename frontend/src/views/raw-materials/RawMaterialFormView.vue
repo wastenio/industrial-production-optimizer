@@ -1,56 +1,102 @@
 <script setup>
-import { reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import { createRawMaterial } from "@/services/rawMaterialService";
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  createRawMaterial,
+  findRawMaterialById,
+  updateRawMaterial,
+} from '@/services/rawMaterialService'
 
-const router = useRouter();
+const router = useRouter()
+const route = useRoute()
 
-const loading = ref(false);
-const errorMessage = ref("");
+const loading = ref(false)
+const errorMessage = ref('')
 
 const form = reactive({
-  code: "",
-  name: "",
-  stockQuantity: "",
-  unit: "",
-});
+  code: '',
+  name: '',
+  stockQuantity: '',
+  unit: '',
+})
 
-async function saveRawMaterial() {
-  loading.value = true;
-  errorMessage.value = "";
+const rawMaterialId = computed(() => route.params.id)
+const isEditMode = computed(() => !!rawMaterialId.value)
+
+async function loadRawMaterial() {
+  if (!isEditMode.value) {
+    return
+  }
+
+  loading.value = true
+  errorMessage.value = ''
 
   try {
-    await createRawMaterial({
-      code: form.code,
-      name: form.name,
-      stockQuantity: Number(form.stockQuantity),
-      unit: form.unit,
-    });
+    const response = await findRawMaterialById(rawMaterialId.value)
 
-    router.push("/raw-materials");
+    form.code = response.data.code
+    form.name = response.data.name
+    form.stockQuantity = response.data.stockQuantity
+    form.unit = response.data.unit
   } catch (error) {
-    console.error(error);
+    const apiError = error.response?.data
 
-    const apiError = error.response?.data;
+    if (apiError?.message) {
+      errorMessage.value = apiError.message
+    } else {
+      errorMessage.value = 'Não foi possível carregar a matéria-prima.'
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+async function saveRawMaterial() {
+  loading.value = true
+  errorMessage.value = ''
+
+  const data = {
+    code: form.code,
+    name: form.name,
+    stockQuantity: Number(form.stockQuantity),
+    unit: form.unit,
+  }
+
+  try {
+    if (isEditMode.value) {
+      await updateRawMaterial(rawMaterialId.value, data)
+    } else {
+      await createRawMaterial(data)
+    }
+
+    router.push('/raw-materials')
+  } catch (error) {
+    const apiError = error.response?.data
 
     if (apiError?.fieldErrors?.length > 0) {
       errorMessage.value = apiError.fieldErrors
         .map((fieldError) => `${fieldError.field}: ${fieldError.message}`)
-        .join(" | ");
+        .join(' | ')
     } else if (apiError?.message) {
-      errorMessage.value = apiError.message;
+      errorMessage.value = apiError.message
     } else {
-      errorMessage.value = "Não foi possível cadastrar a matéria-prima.";
+      errorMessage.value = isEditMode.value
+        ? 'Não foi possível atualizar a matéria-prima.'
+        : 'Não foi possível cadastrar a matéria-prima.'
     }
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
+
+onMounted(() => {
+  loadRawMaterial()
+})
 </script>
 
 <template>
   <main class="page">
-    <h1>Nova matéria-prima</h1>
+    <h1>{{ isEditMode ? 'Editar matéria-prima' : 'Nova matéria-prima' }}</h1>
 
     <p v-if="errorMessage" class="error">
       {{ errorMessage }}
@@ -59,22 +105,12 @@ async function saveRawMaterial() {
     <form @submit.prevent="saveRawMaterial" class="form">
       <div class="form-group">
         <label for="code">Código</label>
-        <input
-          id="code"
-          v-model="form.code"
-          type="text"
-          placeholder="Ex: MP-001"
-        />
+        <input id="code" v-model="form.code" type="text" placeholder="Ex: MP-001" />
       </div>
 
       <div class="form-group">
         <label for="name">Nome</label>
-        <input
-          id="name"
-          v-model="form.name"
-          type="text"
-          placeholder="Ex: Aço"
-        />
+        <input id="name" v-model="form.name" type="text" placeholder="Ex: Aço" />
       </div>
 
       <div class="form-group">
@@ -91,12 +127,7 @@ async function saveRawMaterial() {
 
       <div class="form-group">
         <label for="unit">Unidade</label>
-        <input
-          id="unit"
-          v-model="form.unit"
-          type="text"
-          placeholder="Ex: KG, UN, L"
-        />
+        <input id="unit" v-model="form.unit" type="text" placeholder="Ex: KG, UN, L" />
       </div>
 
       <div class="actions">
@@ -105,7 +136,7 @@ async function saveRawMaterial() {
         </button>
 
         <button type="submit" :disabled="loading">
-          {{ loading ? "Salvando..." : "Salvar" }}
+          {{ loading ? 'Salvando...' : 'Salvar' }}
         </button>
       </div>
     </form>
@@ -159,7 +190,7 @@ button {
   cursor: pointer;
 }
 
-button[type="submit"] {
+button[type='submit'] {
   background: #2563eb;
   color: white;
   border-color: #2563eb;

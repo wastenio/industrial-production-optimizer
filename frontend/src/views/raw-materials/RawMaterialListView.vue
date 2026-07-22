@@ -91,6 +91,12 @@ async function removeRawMaterial(rawMaterial) {
           <td>{{ rawMaterial.stockQuantity }}</td>
           <td>{{ rawMaterial.unit }}</td>
           <td>
+            <button
+              @click="router.push(`/raw-materials/${rawMaterial.id}/edit`)"
+            >
+              Editar
+            </button>
+
             <button class="danger" @click="removeRawMaterial(rawMaterial)">
               Excluir
             </button>
@@ -151,6 +157,10 @@ button {
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+}
+
+td button {
+  margin-right: 8px;
 }
 
 .danger {
