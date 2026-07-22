@@ -8,9 +8,12 @@ import { RouterLink, RouterView } from "vue-router";
       <h2>Produção</h2>
 
       <nav>
+        <RouterLink to="/"> Dashboard </RouterLink>
+
         <RouterLink to="/raw-materials"> Matérias-primas </RouterLink>
 
         <RouterLink to="/products"> Produtos </RouterLink>
+
         <RouterLink to="/production-plan"> Plano de produção </RouterLink>
       </nav>
     </aside>
