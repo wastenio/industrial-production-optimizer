@@ -1,0 +1,6 @@
+<main class="page"><header class="page-header"><div><h1>Produtos</h1><p>Cadastro de produtos e suas composições de matéria-prima.</p></div><a class="button primary" routerLink="/products/new">Novo produto</a></header>
+  @if (loading) { <p>Carregando...</p> } @if (errorMessage) { <p class="error">{{ errorMessage }}</p> }
+  @if (!loading && products.length) { <div class="table-wrap"><table><thead><tr><th>Código</th><th>Nome</th><th>Valor de venda</th><th>Composição</th><th>Ações</th></tr></thead><tbody>
+    @for (item of products; track item.id) { <tr><td>{{ item.code }}</td><td>{{ item.name }}</td><td>{{ item.salePrice | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td><td>{{ item.compositions.length }} item(ns)</td><td class="row-actions"><a class="button" [routerLink]="['/products', item.id, 'edit']">Editar</a><button class="danger" (click)="remove(item)">Excluir</button></td></tr> }
+  </tbody></table></div> } @else if (!loading) { <p>Nenhum produto cadastrado.</p> }
+</main>

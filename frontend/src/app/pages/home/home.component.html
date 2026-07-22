@@ -1,0 +1,15 @@
+<main class="page">
+  <header class="page-header"><div><h1>Industrial Production Optimizer</h1><p>Sistema para controle de matérias-primas, cadastro de produtos e cálculo da melhor combinação de produção com base no estoque disponível.</p></div></header>
+  @if (loading) { <p>Carregando...</p> }
+  @if (errorMessage) { <p class="error">{{ errorMessage }}</p> }
+  <section class="summary">
+    <div class="card"><span>Matérias-primas cadastradas</span><strong>{{ rawMaterialsCount }}</strong></div>
+    <div class="card"><span>Produtos cadastrados</span><strong>{{ productsCount }}</strong></div>
+    <div class="card"><span>Status do sistema</span><strong>Online</strong></div>
+  </section>
+  <section class="card-grid">
+    <article class="card"><h2>Matérias-primas</h2><p>Cadastre e gerencie os insumos disponíveis em estoque.</p><a class="button primary" routerLink="/raw-materials">Acessar matérias-primas</a></article>
+    <article class="card"><h2>Produtos</h2><p>Cadastre produtos e informe a composição necessária para produção.</p><a class="button primary" routerLink="/products">Acessar produtos</a></article>
+    <article class="card"><h2>Plano de produção</h2><p>Calcule a melhor combinação para maximizar o valor total de venda.</p><a class="button primary" routerLink="/production-plan">Calcular plano</a></article>
+  </section>
+</main>

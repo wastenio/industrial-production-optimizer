@@ -1,25 +1,31 @@
 {
-  "name": "frontend",
-  "version": "0.0.0",
+  "name": "industrial-production-optimizer-frontend",
+  "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test"
   },
   "dependencies": {
-    "axios": "^1.18.1",
-    "pinia": "^4.0.2",
-    "vue": "^3.5.40",
-    "vue-router": "^5.2.0"
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/router": "^21.0.0",
+    "rxjs": "^7.8.2",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.8",
-    "vite": "^8.1.5",
-    "vite-plugin-vue-devtools": "^8.1.5"
+    "@angular/build": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
+    "jsdom": "^29.1.1",
+    "typescript": "~5.9.0",
+    "vitest": "^4.0.0"
   },
   "engines": {
-    "node": "^22.18.0 || >=24.12.0"
+    "node": ">=20.19.0"
   }
 }

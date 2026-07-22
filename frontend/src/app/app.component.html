@@ -1,0 +1,12 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <h2>Produção</h2>
+    <nav>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/raw-materials" routerLinkActive="active">Matérias-primas</a>
+      <a routerLink="/products" routerLinkActive="active">Produtos</a>
+      <a routerLink="/production-plan" routerLinkActive="active">Plano de produção</a>
+    </nav>
+  </aside>
+  <section class="content"><router-outlet /></section>
+</div>

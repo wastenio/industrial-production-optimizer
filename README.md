@@ -21,11 +21,11 @@ O objetivo do sistema é maximizar o valor total de venda dos produtos produzido
 
 ### Frontend
 
-- Vue.js
-- Vue Router
-- Pinia
-- Axios
-- Vite
+- Angular 21
+- Angular Router
+- Angular Reactive Forms
+- Angular HTTP Client
+- RxJS
 
 ## Funcionalidades
 
@@ -45,7 +45,7 @@ industrial-production-optimizer/
 ├── backend/
 │   └── API REST desenvolvida com Spring Boot
 ├── frontend/
-│   └── Interface web desenvolvida com Vue.js
+│   └── Interface web desenvolvida com Angular
 └── README.md
 ```
 
@@ -163,10 +163,10 @@ npm install
 Execute o projeto:
 
 ```bash
-npm run dev
+npm start
 ```
 
-O frontend ficará disponível em <http://localhost:5173>.
+O frontend ficará disponível em <http://localhost:4200>.
 
 ## Endpoints principais
 

@@ -1,0 +1,6 @@
+# JavaScript dependencies
+node_modules/
+
+# Frontend build and Angular cache
+frontend/dist/
+frontend/.angular/

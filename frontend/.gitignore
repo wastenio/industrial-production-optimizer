@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 .DS_Store
 dist
-dist-ssr
+.angular
 coverage
 *.local
 
@@ -34,8 +34,3 @@ coverage
 
 # Vitest
 __screenshots__/
-
-# Vite
-*.timestamp-*-*.mjs
-
-.node_modules

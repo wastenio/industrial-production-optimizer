@@ -1,0 +1,10 @@
+<main class="page narrow"><h1>{{ isEditMode ? 'Editar matéria-prima' : 'Nova matéria-prima' }}</h1>
+  @if (errorMessage) { <p class="error">{{ errorMessage }}</p> }
+  <form class="form" [formGroup]="form" (ngSubmit)="save()">
+    <label>Código<input formControlName="code" placeholder="Ex: MP-001"></label>
+    <label>Nome<input formControlName="name" placeholder="Ex: Aço"></label>
+    <label>Quantidade em estoque<input formControlName="stockQuantity" type="number" step="0.001" min="0"></label>
+    <label>Unidade<input formControlName="unit" placeholder="Ex: KG, UN, L"></label>
+    <div class="actions"><a class="button" routerLink="/raw-materials">Cancelar</a><button class="primary" type="submit" [disabled]="loading">{{ loading ? 'Salvando...' : 'Salvar' }}</button></div>
+  </form>
+</main>

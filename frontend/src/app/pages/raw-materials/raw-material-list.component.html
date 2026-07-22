@@ -1,0 +1,10 @@
+<main class="page">
+  <header class="page-header"><div><h1>Matérias-primas</h1><p>Controle de estoque dos insumos disponíveis para produção.</p></div><a class="button primary" routerLink="/raw-materials/new">Nova matéria-prima</a></header>
+  @if (loading) { <p>Carregando...</p> }
+  @if (errorMessage) { <p class="error">{{ errorMessage }}</p> }
+  @if (!loading && rawMaterials.length) {
+    <div class="table-wrap"><table><thead><tr><th>Código</th><th>Nome</th><th>Estoque</th><th>Unidade</th><th>Ações</th></tr></thead><tbody>
+      @for (item of rawMaterials; track item.id) { <tr><td>{{ item.code }}</td><td>{{ item.name }}</td><td>{{ item.stockQuantity }}</td><td>{{ item.unit }}</td><td class="row-actions"><a class="button" [routerLink]="['/raw-materials', item.id, 'edit']">Editar</a><button class="danger" (click)="remove(item)">Excluir</button></td></tr> }
+    </tbody></table></div>
+  } @else if (!loading) { <p>Nenhuma matéria-prima cadastrada.</p> }
+</main>
