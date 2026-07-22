@@ -9,31 +9,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record RawMaterialRequest(
-
-        @NotBlank(message = "Code is required")
-        @Size(max = 50, message = "Code must have at most 50 characters")
+        @NotBlank(message = "O código é obrigatório.")
+        @Size(max = 50, message = "O código deve ter no máximo 50 caracteres.")
         String code,
 
-        @NotBlank(message = "Name is required")
-        @Size(max = 150, message = "Name must have at most 150 characters")
+        @NotBlank(message = "O nome é obrigatório.")
+        @Size(max = 150, message = "O nome deve ter no máximo 150 caracteres.")
         String name,
 
-        @NotNull(message = "Stock quantity is required")
-        @DecimalMin(
-                value = "0.000",
-                inclusive = true,
-                message = "Stock quantity must be zero or greater"
-        )
-        @Digits(
-                integer = 12,
-                fraction = 3,
-                message = "Stock quantity must have at most 12 integer digits and 3 decimal places"
-        )
+        @NotNull(message = "A quantidade em estoque é obrigatória.")
+        @DecimalMin(value = "0.000", inclusive = true, message = "A quantidade em estoque deve ser maior ou igual a zero.")
+        @Digits(integer = 12, fraction = 3, message = "A quantidade em estoque deve ter no máximo 12 dígitos inteiros e 3 casas decimais.")
         BigDecimal stockQuantity,
 
-        @NotBlank(message = "Unit is required")
-        @Size(max = 20, message = "Unit must have at most 20 characters")
+        @NotBlank(message = "A unidade é obrigatória.")
+        @Size(max = 20, message = "A unidade deve ter no máximo 20 caracteres.")
         String unit
-
-) {
-}
+) {}
