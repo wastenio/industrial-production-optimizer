@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# Configurações locais sensíveis
+src/main/resources/application-local.properties
+
+# Build do backend
+target/
+
+# Arquivos de ambiente
+.env
+*.env
