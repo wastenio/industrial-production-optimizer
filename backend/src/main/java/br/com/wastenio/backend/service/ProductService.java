@@ -22,136 +22,111 @@ import br.com.wastenio.backend.repository.RawMaterialRepository;
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
-    private final RawMaterialRepository rawMaterialRepository;
-    private final ProductMapper productMapper;
+	private final ProductRepository productRepository;
+	private final RawMaterialRepository rawMaterialRepository;
+	private final ProductMapper productMapper;
 
-    public ProductService(
-            ProductRepository productRepository,
-            RawMaterialRepository rawMaterialRepository,
-            ProductMapper productMapper) {
+	public ProductService(ProductRepository productRepository, RawMaterialRepository rawMaterialRepository,
+			ProductMapper productMapper) {
 
-        this.productRepository = productRepository;
-        this.rawMaterialRepository = rawMaterialRepository;
-        this.productMapper = productMapper;
-    }
+		this.productRepository = productRepository;
+		this.rawMaterialRepository = rawMaterialRepository;
+		this.productMapper = productMapper;
+	}
 
-    @Transactional
-    public ProductResponse create(ProductRequest request) {
-        String normalizedCode = productMapper.normalizeCode(request.code());
+	@Transactional
+	public ProductResponse create(ProductRequest request) {
+		String normalizedCode = productMapper.normalizeCode(request.code());
 
-        validateDuplicatedCode(normalizedCode);
-        validateDuplicatedRawMaterialsInComposition(request.compositions());
+		validateDuplicatedCode(normalizedCode);
+		validateDuplicatedRawMaterialsInComposition(request.compositions());
 
-        Product product = productMapper.toEntity(request);
+		Product product = productMapper.toEntity(request);
 
-        addCompositionsToProduct(product, request.compositions());
+		addCompositionsToProduct(product, request.compositions());
 
-        Product savedProduct = productRepository.save(product);
+		Product savedProduct = productRepository.save(product);
 
-        return productMapper.toResponse(savedProduct);
-    }
+		return productMapper.toResponse(savedProduct);
+	}
 
-    @Transactional(readOnly = true)
-    public List<ProductResponse> findAll() {
-        return productRepository.findAll()
-                .stream()
-                .map(productMapper::toResponse)
-                .toList();
-    }
+	@Transactional(readOnly = true)
+	public List<ProductResponse> findAll() {
+		return productRepository.findAll().stream().map(productMapper::toResponse).toList();
+	}
 
-    @Transactional(readOnly = true)
-    public ProductResponse findById(Long id) {
-        Product product = findEntityById(id);
+	@Transactional(readOnly = true)
+	public ProductResponse findById(Long id) {
+		Product product = findEntityById(id);
 
-        return productMapper.toResponse(product);
-    }
+		return productMapper.toResponse(product);
+	}
 
-    @Transactional
-    public ProductResponse update(Long id, ProductRequest request) {
-        Product product = findEntityById(id);
+	@Transactional
+	public ProductResponse update(Long id, ProductRequest request) {
+		Product product = findEntityById(id);
 
-        String normalizedCode = productMapper.normalizeCode(request.code());
+		String normalizedCode = productMapper.normalizeCode(request.code());
 
-        if (productRepository.existsByCodeAndIdNot(normalizedCode, id)) {
-            throw new BusinessException(
-                    "A product with code '" + normalizedCode + "' already exists"
-            );
-        }
+		if (productRepository.existsByCodeAndIdNot(normalizedCode, id)) {
+			throw new BusinessException("Já existe um produto com o código '" + normalizedCode + "'.");
+		}
 
-        validateDuplicatedRawMaterialsInComposition(request.compositions());
+		productMapper.updateEntityFromRequest(request, product);
 
-        productMapper.updateEntityFromRequest(request, product);
+		product.clearCompositions();
+		productRepository.flush();
 
-        product.clearCompositions();
-        addCompositionsToProduct(product, request.compositions());
+		addCompositionsToProduct(product, request.compositions());
 
-        Product updatedProduct = productRepository.save(product);
+		return productMapper.toResponse(product);
+	}
 
-        return productMapper.toResponse(updatedProduct);
-    }
+	@Transactional
+	public void delete(Long id) {
+		Product product = findEntityById(id);
 
-    @Transactional
-    public void delete(Long id) {
-        Product product = findEntityById(id);
+		productRepository.delete(product);
+	}
 
-        productRepository.delete(product);
-    }
+	private Product findEntityById(Long id) {
+		return productRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"));
+	}
 
-    private Product findEntityById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product with id " + id + " was not found"
-                ));
-    }
+	private void validateDuplicatedCode(String normalizedCode) {
+		if (productRepository.existsByCode(normalizedCode)) {
+			throw new BusinessException("A product with code '" + normalizedCode + "' already exists");
+		}
+	}
 
-    private void validateDuplicatedCode(String normalizedCode) {
-        if (productRepository.existsByCode(normalizedCode)) {
-            throw new BusinessException(
-                    "A product with code '" + normalizedCode + "' already exists"
-            );
-        }
-    }
+	private void validateDuplicatedRawMaterialsInComposition(List<ProductCompositionRequest> compositions) {
 
-    private void validateDuplicatedRawMaterialsInComposition(
-            List<ProductCompositionRequest> compositions) {
+		Set<Long> rawMaterialIds = new HashSet<>();
 
-        Set<Long> rawMaterialIds = new HashSet<>();
+		for (ProductCompositionRequest composition : compositions) {
+			boolean added = rawMaterialIds.add(composition.rawMaterialId());
 
-        for (ProductCompositionRequest composition : compositions) {
-            boolean added = rawMaterialIds.add(composition.rawMaterialId());
+			if (!added) {
+				throw new BusinessException("Raw material with id " + composition.rawMaterialId()
+						+ " is duplicated in product composition");
+			}
+		}
+	}
 
-            if (!added) {
-                throw new BusinessException(
-                        "Raw material with id " + composition.rawMaterialId()
-                                + " is duplicated in product composition"
-                );
-            }
-        }
-    }
+	private void addCompositionsToProduct(Product product, List<ProductCompositionRequest> compositionRequests) {
 
-    private void addCompositionsToProduct(
-            Product product,
-            List<ProductCompositionRequest> compositionRequests) {
+		for (ProductCompositionRequest compositionRequest : compositionRequests) {
+			RawMaterial rawMaterial = findRawMaterialById(compositionRequest.rawMaterialId());
 
-        for (ProductCompositionRequest compositionRequest : compositionRequests) {
-            RawMaterial rawMaterial = findRawMaterialById(
-                    compositionRequest.rawMaterialId()
-            );
+			ProductComposition composition = new ProductComposition(rawMaterial, compositionRequest.requiredQuantity());
 
-            ProductComposition composition = new ProductComposition(
-                    rawMaterial,
-                    compositionRequest.requiredQuantity()
-            );
+			product.addComposition(composition);
+		}
+	}
 
-            product.addComposition(composition);
-        }
-    }
-
-    private RawMaterial findRawMaterialById(Long id) {
-        return rawMaterialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Raw material with id " + id + " was not found"
-                ));
-    }
+	private RawMaterial findRawMaterialById(Long id) {
+		return rawMaterialRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Raw material with id " + id + " was not found"));
+	}
 }

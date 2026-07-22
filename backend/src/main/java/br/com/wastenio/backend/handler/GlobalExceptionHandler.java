@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
-                "A database integrity violation occurred",
+                "Ocorreu uma violação de integridade no banco de dados.",
                 request.getRequestURI(),
                 null
         );
